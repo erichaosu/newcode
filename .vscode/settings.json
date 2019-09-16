@@ -1,0 +1,34 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "files.associations": {
+        "ostream": "cpp",
+        "*.tcc": "cpp",
+        "cctype": "cpp",
+        "clocale": "cpp",
+        "cstdarg": "cpp",
+        "cstddef": "cpp",
+        "cstdio": "cpp",
+        "cstdlib": "cpp",
+        "cstring": "cpp",
+        "ctime": "cpp",
+        "cwchar": "cpp",
+        "cwctype": "cpp",
+        "exception": "cpp",
+        "iosfwd": "cpp",
+        "iostream": "cpp",
+        "istream": "cpp",
+        "limits": "cpp",
+        "memory": "cpp",
+        "new": "cpp",
+        "streambuf": "cpp",
+        "cmath": "cpp",
+        "functional": "cpp",
+        "hashtable": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "unordered_map": "cpp",
+        "utility": "cpp",
+        "typeinfo": "cpp",
+        "set": "cpp"
+    }
+}
