@@ -14,7 +14,8 @@ typedef enum {
 	pbuildtree=4,
 	psubsetoffib=5,
 	pstr2tree=6,
-	pmaxsumofedges=7
+	pmaxsumofedges=7,
+	proman2int=8,
 }problem;
 
 class Node {
@@ -478,6 +479,41 @@ int maxsumbetweenedges(elem* root)
 	maxsumofedges(root, res);
 	return res;
 }
+//roman 2 interger
+int getint(char c)
+{
+	if(c == 'I') return 1;
+	else if(c == 'V') return 5;
+	else if(c == 'X') return 10;
+	else if(c == 'L') return 50;
+	else if(c == 'C') return 100;
+	else if(c == 'D') return 500;
+	else if(c == 'M') return 1000;
+	else return -1;
+}
+int roman2int(string rn)
+{
+	int res=0;
+	for (int i =0; i< rn.length(); i++){
+		int s1 = getint(rn[i]);
+		if (i+1 < rn.length()){
+			int s2 = getint(rn[i+1]);
+			if (s1 < s2){
+				res = res + s2-s1;
+				i++;	
+			}
+			else {
+				res = res + s1;
+			}
+		}
+		else {
+			res = res + s1; 
+		}
+	}
+	return res;
+}
+
+
 
 int main()
 {
@@ -598,6 +634,19 @@ int main()
 		outtree(rt, 5);
 		cout<<"max sum "<<maxsumbetweenedges(rt)<<endl;
 	}
+	}
+	case proman2int:{
+		int digits;
+		string rn;
+		cout<<"inout testcase: "<<endl;
+		cin>>testcase;
+		while(testcase--){
+			cout<<"input roman number: "<<endl;
+			
+			cin>>rn;
+			
+			cout<<rn<<" = "<<roman2int(rn)<<endl;
+		}
 	}
 	break;
 	default:
