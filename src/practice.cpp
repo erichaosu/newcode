@@ -16,6 +16,11 @@ typedef enum {
 	pstr2tree=6,
 	pmaxsumofedges=7,
 	proman2int=8,
+	ptripletwith0sum=9,
+	pminsubset=10,
+	ppalindro=11,
+	pkpalindro=12,
+	pprintleaf =13,
 }problem;
 
 class Node {
@@ -513,10 +518,130 @@ int roman2int(string rn)
 	return res;
 }
 
+vector<vector<int>> findthreesum(int* arr, int length, int t)
+{
+	vector<vector<int>> triplet = {{}};
+	vector<int> res = {};
+	sort(arr, arr+length);
+	for (int i =0; i<length-2;i++){
+		int left = i+1;
+		int right = length-1;
+		while(left <right){
+			int sum = arr[i]+arr[left]+arr[right];
+			if(sum == t){
+				triplet.push_back({arr[i],arr[left],arr[right]});
+				break;
+			}
+			else if (sum <t){
+				left ++;
+			}
+			else {
+				right--;
+			}
+		}
+	}
+	return triplet;
+}
+int minsubset(int arr[], int size, int num)
+{
+	int min_len = size +1;
+	int cur_sum = 0;
+	int start = 0;
+	int end = 0;
+	while(end < size){
+	while (cur_sum <=num && end < size){
+		cur_sum +=arr[end];
+		end++;
+	}
+	while (cur_sum >num && start <size){
+		cur_sum -=arr[start];
+		start ++;
+		//update min_len
+		if (min_len > (end-start)){
+			min_len = end-start;
+		}
+	}
+	}
+	if (min_len > size) return -1;
+	return min_len;
+}
 
+bool ispalindro(string str)
+{
+	int left = 0;
+	int right = str.length() -1;
+		while (left < right){
+			if (str[left] == ' '){
+				left ++;
+			}
+			if (str[right] == ' '){
+				right --;
+			}
+			if (str[left] != str[right]){
+				return false;
+			}
+			left ++;
+			right--;
+		}
+	return true;
+}
+int numofdel(string str, int m, string rstr, int n)
+{
+	//if pne str le = 0, all char of other str should be deleted
+	if (m == 0) return n;
+	if (n == 0) return m;
+
+	if (str[m-1] == str[n-1]){
+		return numofdel(str, m-1, rstr, n-1);
+	}
+	return 1+ min(numofdel(str, m-1, rstr, n),
+			      numofdel(str, m, rstr, n-1));			
+}
+bool iskpalindro(string str, int k)
+{
+	string rstr = str;
+	reverse(rstr.begin(), rstr.end());
+	int len = str.length();
+	if (numofdel(str, len, rstr, len)<= 2*k){
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+struct BST{
+	int value;
+	BST* left;
+	BST* right;
+};
+void insertbst(BST* &root, int val)
+{
+	BST* cur = new BST();
+	cur->value = val;
+	if (root == NULL){
+		root = cur;
+		return;
+	}
+	if (val < root->value){
+		insertbst(root->left, val);
+	}
+	else {
+		insertbst(root->right, val);
+	}
+}
+void printleaf(BST* bst)
+{
+	BST* cur= bst;
+	if (cur->left ==NULL && cur->right ==NULL){
+		cout<<cur->value<<"\t";
+	}
+	if (cur->left) printleaf(cur->left);
+	if (cur->right) printleaf(cur->right);
+}
 
 int main()
 {
+	string name;
 	int testcase;
 	int pr;
     DoublyLinkedList* linkedList = new DoublyLinkedList();
@@ -646,6 +771,109 @@ int main()
 			cin>>rn;
 			
 			cout<<rn<<" = "<<roman2int(rn)<<endl;
+		}
+	}
+	break;
+	case ptripletwith0sum:{
+		int size;
+		cout<<"input testcase  "<<endl;
+		cin>>testcase;
+		while(testcase --){
+			cout<<"input array size "<<endl;
+			cin>>size;
+			int arr[size];
+			for (int i =0; i<size;i++){
+				cin>>arr[i];
+			}
+			vector<vector<int>> triplet = findthreesum(arr, size, 0);
+			
+			for (vector<int> m:triplet){
+				cout<<"{";
+				for(int i: m){
+					cout<<i<<",";
+				}
+				cout<<"}, ";
+			}
+			vector<vector<int>> test(1);
+			test[0].push_back(1);
+			cout<<test[0][0]<<endl;
+		}
+	}
+	break;
+	case pminsubset:{
+		int size,num;
+		cout<<"input testcase  "<<endl;
+		cin>>testcase;
+		while(testcase --){
+			cout<<"input array size "<<endl;
+			cin>>size;
+			cout<<"input number "<<endl;
+			cin>>num;
+			int arr[size];
+			for (int i =0; i<size;i++){
+				cin>>arr[i];
+			}
+			cout<<minsubset(arr, size, num)<<endl;
+		}
+	}
+	break;
+	case ppalindro:{
+		
+		cout<<"input testcase  "<<endl;
+		cin>>testcase;
+		cin.ignore();
+		while(testcase --){
+			cout<<"input string "<<endl;
+			
+			getline (cin,name);
+			if (ispalindro(name)){
+				cout<<" Yes "<<endl;				
+			}
+			else {
+				cout<<" NO "<<endl;	
+			}
+			
+		}
+	}
+	break;
+	case pkpalindro:{
+		int k;
+		cout<<"input testcase  "<<endl;
+		cin>>testcase;
+		cin>>k;
+		cin.ignore();
+		while(testcase --){
+			cout<<"input string "<<endl;
+			
+			getline (cin,name);
+			if (iskpalindro(name, k)){
+				cout<<" Yes "<<endl;				
+			}
+			else {
+				cout<<" NO "<<endl;	
+			}
+			
+		}
+	}
+	break;
+	case pprintleaf:{
+		int numofnodes;
+		cout<<"input testcase  "<<endl;
+		cin>>testcase;
+		cout<<"input num nodes"<<endl;
+		cin>>numofnodes;
+		vector<int> nodes;
+		int n;
+		while(testcase --){
+			cout<<"input data "<<endl;
+			BST* bst = NULL;
+			for(int i=0; i <numofnodes; i++){
+				cin>>n;
+				nodes.push_back(n);
+				insertbst(bst, nodes[i]);
+				
+			}
+			printleaf(bst);
 		}
 	}
 	break;
