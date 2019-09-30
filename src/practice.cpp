@@ -4,7 +4,8 @@
 #include <unordered_map>
 #include <iomanip>
 #include <math.h>
-#include<climits>
+#include <climits>
+#include <stack>
 using namespace std;
 
 typedef enum {
@@ -21,8 +22,95 @@ typedef enum {
 	ppalindro=11,
 	pkpalindro=12,
 	pprintleaf =13,
+	pmaxsecwooverlap=14,
+	ptriplesumnum = 15,
+	ptwodiff=16,
+	pstrdecode=17,
+	pbirdandtree=18,
+	preversesinlist=19,
+	ptreemirror=20,
 }problem;
 
+class single_link{
+	public:
+	struct element{
+		int data;
+		element* next;
+		element(int val, element* y=0){
+			data = val;
+			next = y;
+		}
+	};
+	element* head;
+	element* tail;
+
+	single_link(){
+		head = NULL;
+		tail = NULL;
+	}
+	~single_link();
+	void add_front(int val);
+	void del_elem(int val);
+	void display();
+	void revers_singlelink(element* list);
+
+};
+void single_link::add_front(int val)
+{
+	element* new_elem = new element(val);
+	if (this == NULL) {
+		this->head = new_elem;
+		this->tail = new_elem;
+	}
+	new_elem->next = this->head;
+	this->head = new_elem;
+}
+
+void single_link::del_elem(int val)
+{
+	if (this == NULL) return;
+	element* cur = this->head;
+	if(this->head->data == val){
+		this->head = this->head->next;
+		delete cur;
+	}
+	element* tmp;
+	while (cur && cur->next != NULL){
+		if(cur->next->data == val){
+			tmp = cur->next;
+			cur->next = cur->next->next;
+			delete tmp;
+		}
+		cur = cur->next;
+	}
+}
+
+void single_link::display()
+{
+	element* cur = this->head;
+	while(cur != NULL){
+		cout<<cur->data<<"->";
+		cur = cur->next;
+	}
+	cout<<"NULL"<<endl;
+}
+void single_link::revers_singlelink(element* list)
+{
+	if (list == NULL) return;
+	if (list->next == NULL) return;
+	element* t1 = NULL;
+	element* t2 = list;
+	element* t3;
+	while (t2 != NULL){
+		t3 = t2->next;
+		t2->next = t1;
+		t1 = t2;
+		t2 = t3;
+	}
+	this->head = t1;
+}
+
+//double linklist
 class Node {
   public:
     int value;
@@ -276,6 +364,11 @@ node* convertExpression(string str, int i)
 {
 	return convertExpressionHelp(str, i);
 }
+
+//input array 1 2 R 1 3 L to build binary tree
+//    1
+//   /  \
+//  3    2 
 void insertnode(node* parent, char t[])
 {
 	node* cur = new node();
@@ -299,7 +392,7 @@ node* findnode(node* root, char t[])
 		findnode(cur->right, t);
 	}
 }
-
+//recursive get min depth of tree
 int mindepth(node* t)
 {
 	if(!t) return 0;
@@ -362,7 +455,7 @@ string int2str(int t)
 	//reverse s
 	return reverse(s);
 }
-
+//rearrage str sum number and sort char, input: 3A2C4B == 9ABC
 string rearrange(string s)
 {
 	string output = "";
@@ -383,6 +476,8 @@ string rearrange(string s)
 	return output;
 }
 #if 1
+//check if string s contain string x 
+//if true, output position i in str 1 
 int strstr(string s, string x)
 {
 	int i,j;
@@ -520,7 +615,7 @@ int roman2int(string rn)
 
 vector<vector<int>> findthreesum(int* arr, int length, int t)
 {
-	vector<vector<int>> triplet = {{}};
+	vector<vector<int>> triplet;
 	vector<int> res = {};
 	sort(arr, arr+length);
 	for (int i =0; i<length-2;i++){
@@ -542,6 +637,7 @@ vector<vector<int>> findthreesum(int* arr, int length, int t)
 	}
 	return triplet;
 }
+//smallest subarray with sum greater than num
 int minsubset(int arr[], int size, int num)
 {
 	int min_len = size +1;
@@ -639,6 +735,156 @@ void printleaf(BST* bst)
 	if (cur->right) printleaf(cur->right);
 }
 
+int  maxsecwooverlap(vector<int> &start, vector<int> &end, int numofnodes)
+{
+	int maxnoneoverlap = 0;
+	// sort both array
+	sort(start.begin(), start.end());
+	sort(end.begin(), end.end());
+	//assume first sec is ine of result
+	maxnoneoverlap++;
+	int j = 0;
+	for (int i = 1; i< numofnodes; i++){
+		if (start[i] >= end[j]){
+			maxnoneoverlap++;
+			j = i;
+		}
+	}
+	return maxnoneoverlap;
+}
+
+int triplesumnum(vector<int> arr, int numofnodes, int t)
+{
+	vector<vector<int>> res;
+	int sum;
+	sort(arr.begin(), arr.end());
+	for (int i = 0; i < numofnodes; i++){
+		int left = i+1;
+		int right = numofnodes-1;
+		while(left < right){
+			sum = arr[i] + arr[left] +arr[right];
+			if(sum == t){
+				res.push_back({arr[i],arr[left],arr[right]});
+				break;
+			}
+			else if (sum < t){
+				left++;
+			} 
+			else {
+				right --;
+			}
+		}
+	}
+	return res.end() - res.begin();
+}
+
+int twodiff(vector<int> arr, int size, int t)
+{
+	int res =0;
+	sort(arr.begin(), arr.end());
+	int left=0;
+	int right =1;
+	while(right < size){
+		if(arr[right]-arr[left]== t){
+			res++;
+			left++;
+			right++;
+		}
+		else if (arr[right]-arr[left] <t){
+			right++;
+		}
+		else {
+			left ++;
+		}
+	}
+	return res;
+}
+
+string strdecode(string str)
+{
+	stack<int> intstack;
+	stack<char> charstack;
+	string res;
+	for (int i =0; i < str.length(); i++){
+		//check if it's a num
+		if (str[i] >='0' && str[i] <= '9'){
+			int intnum =0;
+			while (str[i] >='0' && str[i] <= '9'){
+				intnum = intnum*10 + (str[i]-'0');
+				i++; 
+			}
+			i--;
+			intstack.push(intnum); 
+		}
+		else if (str[i] == '['){
+			charstack.push(str[i]);
+			if(i==0&&!(str[i-1] >='0' && str[i-1] <= '9')){
+				intstack.push(1);
+			}
+		}
+		else if (str[i] == ']'){
+			string temp = "";
+			int count= 0;
+			//pop int stack to get count of char
+			if (!intstack.empty()){
+				count = intstack.top();
+				intstack.pop();
+			}
+			//assemble all chars before '['
+			while (!charstack.empty() && charstack.top() != '['){
+				temp =charstack.top()+temp;
+				charstack.pop();
+			} 
+			//pop '['
+			while (!charstack.empty() && charstack.top() == '['){
+				charstack.pop();
+			}
+			//assemble chars with count
+			for (int i =0; i <count; i++){
+				res +=temp;
+			}
+			//push res* count backin
+			for(int j =0; j <res.length(); j++){
+				charstack.push(res[j]);
+			}
+			res = "";
+		}
+		else{
+			charstack.push(str[i]);
+		}
+	}
+	while(!charstack.empty()){
+		res =charstack.top() + res;
+		charstack.pop();
+	}
+	return res;
+}
+
+ int maxTreeSum(int a[], int size, int windowsize)
+{
+   int max_so_far = 0, max_wind_start = -1;
+   int i,j,sum=0;
+   int w = windowsize;
+   int n = size;
+   for(i=0;i<n;i++){
+       for(j=0;j<w;j++){
+           sum=sum+a[(j+i)%n];
+       }
+       if(max_so_far < sum){ max_wind_start=i ;max_so_far = sum; }
+       sum=0;
+
+   }
+   printf("Max sum resulting window");
+   j=max_wind_start;
+   
+   while(w--){
+        printf(" %d",a[j%n]);
+        j++;
+    }
+    printf("\n");
+   return max_so_far;
+}
+
 int main()
 {
 	string name;
@@ -653,12 +899,12 @@ int main()
 	cin>>pr;
 	switch (pr) {
 	
-	// fib(8)
+	// fib(8)  get fibnacci number using O(n) time O(1) space two number array        1
 	case pfib:
 	cout<<fib(8)<<endl;
 	break;
 	
-	// strstr
+	// strstr   if str1 contain str2, return position of str1               2
 	case pstrstr: {
 	string s1 = "aaaaaaaaaaaaaab";
 	string x ="aaaab";
@@ -666,7 +912,7 @@ int main()
 	}
 	break;
 
-    //rearrange str
+    //rearrange str sum number and sort char, input: 3A2C4B == 9ABC         3
 	case prearrangestr: {
 	string s;
 	cin>>testcase;
@@ -676,7 +922,12 @@ int main()
 	}
 	}
 	break;
-	//build tree
+	//build tree and find min depth of tree                                 4
+
+	//input array 1 2 R 1 3 L to build binary tree
+	//    1
+	//   /  \
+	//  3    2
 	case pbuildtree:{
 	int edges;
 	char edge[3];
@@ -705,7 +956,7 @@ int main()
 	}
 	}
 	break;
-	////find a subset with all fib numbers
+	////find a subset with all fib numbers              5
 	case psubsetoffib:
 	cin>>testcase;
 	while(testcase --){
@@ -724,7 +975,12 @@ int main()
 	cout<<endl;
 	break;
 	case pstr2tree:{
-	//convert str2tree
+	//convert str2tree                                 6
+	//tenary expression to build tree
+	// a?b?c:d:e build tree 
+	//        a
+	//      b   e
+	//    c   d
 	string str = "a?b?c:d:e";
 	node* root;
 	root = convertExpression(str, 0);
@@ -732,6 +988,8 @@ int main()
 	outtree(root, 0);
 	}
 	break;
+	// max sum of edges                                          7
+	//use 12L13R build tree then get the max sum between two edges
 	case pmaxsumofedges:{
 	int edges;
 	int edge[3];
@@ -760,6 +1018,7 @@ int main()
 		cout<<"max sum "<<maxsumbetweenedges(rt)<<endl;
 	}
 	}
+	// roman number to int                            8
 	case proman2int:{
 		int digits;
 		string rn;
@@ -774,6 +1033,7 @@ int main()
 		}
 	}
 	break;
+	//triple sum equal to 0                          9
 	case ptripletwith0sum:{
 		int size;
 		cout<<"input testcase  "<<endl;
@@ -800,6 +1060,7 @@ int main()
 		}
 	}
 	break;
+	//smallest subarray with sum greater than num                10
 	case pminsubset:{
 		int size,num;
 		cout<<"input testcase  "<<endl;
@@ -817,6 +1078,7 @@ int main()
 		}
 	}
 	break;
+	//check if str is palinedrom                           11
 	case ppalindro:{
 		
 		cout<<"input testcase  "<<endl;
@@ -836,6 +1098,8 @@ int main()
 		}
 	}
 	break;
+	// k palindrom                          12
+	//check if a str become palindrom after removing k char
 	case pkpalindro:{
 		int k;
 		cout<<"input testcase  "<<endl;
@@ -856,6 +1120,7 @@ int main()
 		}
 	}
 	break;
+	//print bst leaves inorder                  13
 	case pprintleaf:{
 		int numofnodes;
 		cout<<"input testcase  "<<endl;
@@ -874,6 +1139,130 @@ int main()
 				
 			}
 			printleaf(bst);
+		}
+	}
+	break;
+	//max number of sequence number without overlap       14
+	case pmaxsecwooverlap:{
+		int numofnodes;
+		cout<<"input testcase  "<<endl;
+		cin>>testcase;
+		
+		vector<int> start;
+		vector<int> end;
+		int n;
+		while(testcase --){
+			cout<<"input num activity"<<endl;
+			cin>>numofnodes;
+			cout<<"input data "<<endl;
+			for(int i=0; i <numofnodes; i++){
+				cin>>n;
+				start.push_back(n);
+			}
+			for(int i=0; i <numofnodes; i++){
+				cin>>n;
+				end.push_back(n);
+			}
+			cout<<maxsecwooverlap(start, end, numofnodes)<<endl;;
+		}
+	}
+	break;
+	//triple sum equal to target number                15
+	case ptriplesumnum: {
+		int numofnodes;
+		cout<<"input testcase  "<<endl;
+		cin>>testcase;
+		
+		vector<int> arr;
+		int n,t;
+		while(testcase --){
+			cout<<"input num nodes"<<endl;
+			cin>>numofnodes>>t;
+			cout<<"input node data "<<endl;
+			for(int i=0; i <numofnodes; i++){
+				cin>>n;
+				arr.push_back(n);
+			}
+			cout<<triplesumnum(arr, numofnodes, t)<<endl;
+		}
+	}
+	break;
+	//similar to twosum but twodiff equal to target num  16
+	case ptwodiff: {
+		int numofnodes;
+		cout<<"input testcase  "<<endl;
+		cin>>testcase;
+		
+		vector<int> arr;
+		int n,t;
+		while(testcase --){
+			cout<<"input num nodes"<<endl;
+			cin>>numofnodes;
+			cout<<"input node data "<<endl;
+			for(int i=0; i <numofnodes; i++){
+				cin>>n;
+				arr.push_back(n);
+			}
+			cin>>t;
+			cout<<twodiff(arr, numofnodes, t)<<endl;
+		}
+	}
+	break;
+	//decode str [b2[ca]] == bcaca                17
+	case pstrdecode: {
+		int numofnodes;
+		cout<<"input testcase  "<<endl;
+		cin>>testcase;
+		string str;
+		while(testcase --){
+			cout<<"input node data "<<endl;
+			cin>>str;
+			cout<<strdecode(str)<<endl;
+		}
+	}
+	break;
+	//bird and tree bird input: numoftree, total seconds
+	// array of fruit on each tree, output maxfruit bird can get 
+	// within that sec                                   18
+	case pbirdandtree: {
+		int numofnodes;
+		cout<<"input testcase  "<<endl;
+		cin>>testcase;
+		int numtree, sec;
+		while(testcase --){
+			cout<<"num of tree "<<endl;
+			cin>>numtree;
+			cin>>sec;
+			int a[numtree];
+			for(int i =0; i <numtree; i++){
+				cin>>a[i];
+			}
+			cout<<maxTreeSum(a, numtree, sec)<<endl;
+		}
+	}
+	break;
+	//build single list, reverse list                     19
+	case preversesinlist: {
+		int numofnodes;
+		cout<<"input testcase  "<<endl;
+		cin>>testcase;
+		int numtree, sec;
+		while(testcase --){
+			cout<<"num of elem "<<endl;
+			cin>>numtree;
+			int a[numtree];
+			single_link* sinlist = new single_link();
+			for(int i =0; i <numtree; i++){
+				cin>>a[i];
+				sinlist->add_front(a[i]);
+			}
+			sinlist->display();
+			sinlist->revers_singlelink(sinlist->head);
+			sinlist->display();
+			cout<<"delete element :"<<endl;
+			cin>>sec;
+			sinlist->del_elem(sec);
+			sinlist->display();
 		}
 	}
 	break;
