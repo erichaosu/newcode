@@ -906,9 +906,16 @@ int main()
 	
 	// strstr   if str1 contain str2, return position of str1               2
 	case pstrstr: {
-	string s1 = "aaaaaaaaaaaaaab";
-	string x ="aaaab";
-	cout<<strstr(s1,x)<<endl;
+	string s1, s2;
+	cin>>testcase;
+	while(testcase --){
+		cout<<"enter string 1"<<endl;
+    	cin>>s1;
+		cout<<"enter string 2"<<endl;
+		cin>>s2;
+	}
+	
+	cout<<strstr(s1,s2)<<endl;
 	}
 	break;
 
@@ -917,6 +924,7 @@ int main()
 	string s;
 	cin>>testcase;
 	while(testcase --){
+		cout<<"enter string such as 3B2CA, see rearrage"<<endl;
     	cin>>s;
 		cout<<rearrange(s)<<endl;
 	}
@@ -1121,6 +1129,7 @@ int main()
 	}
 	break;
 	//print bst leaves inorder                  13
+	//build bst then print nodes in preorder
 	case pprintleaf:{
 		int numofnodes;
 		cout<<"input testcase  "<<endl;
