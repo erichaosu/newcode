@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
+#include <unordered_set>
 #include <iomanip>
 #include <math.h>
 #include <climits>
@@ -29,6 +30,10 @@ typedef enum {
 	pbirdandtree=18,
 	preversesinlist=19,
 	ptreemirror=20,
+	psumwithoutoperator =21,
+	puniquenuminarray=22,
+	ptwosum = 23,
+	pbsttravers=24,
 }problem;
 
 class single_link{
@@ -885,6 +890,107 @@ string strdecode(string str)
    return max_so_far;
 }
 
+int getSum(int a, int b)
+{
+	if (b ==0) return a;
+	return getSum(a^b, (a&b)<<1);
+}
+
+int finduniqueNuminArr(int arr[], int size)
+{
+	int result = arr[0];	
+	for(int i=1; i < size; i ++){
+		result ^=arr[i];
+	}
+	return result;
+}
+
+#if 0
+//time = O(n), space = O(n)
+vector<int> twosum(int arr[], int size, int target)
+{
+	unordered_set<int> cache;
+	vector<int> result;
+	for(int i =0; i<size;i++){
+		int diff = target - arr[i];
+		if (cache.find(diff)!= cache.end()){
+			return diff>arr[i]? vector<int> {arr[i], diff}: vector<int> {diff,arr[i]};
+		}
+		else{
+			cache.insert(arr[i]);
+		}
+	}
+}
+#else
+//time = O(nlogn), space = O(1) sort = O(nlogn)
+vector<int> twosum(int arr[], int size, int target)
+{
+	sort(arr, arr+size);
+	int left = 0;
+	int right = size -1;
+	while(left < right){
+		if ((arr[left]+arr[right])==target){
+			return {arr[left],arr[right]};
+		}
+		else if ((arr[left]+arr[right])<target){
+			left ++;
+		}
+		else {
+			right --;
+		}
+	}
+	return {};
+}
+#endif
+#if 0
+//recursive time = O(logn) space= O(logn)
+int getClosestHelp(elem* rt, int target, int& closest)
+{
+	int diff = rt->data - target;
+	if (diff == 0) return rt->data;
+	if (abs(diff)< abs(closest-target)) closest = rt->data;
+	if ((target < rt->data) && (rt->left)) {
+		getClosestHelp(rt->left, target, closest);
+	}
+	else if ((target > rt->data) && (rt->right)){
+		getClosestHelp(rt->right, target, closest);
+	}
+	else {
+		return closest;
+	}
+}
+int getClosest(elem* rt, int target)
+{
+	int closest = INT_MAX;
+	return getClosestHelp(rt, target, closest);
+
+}
+#else
+//time O(logn) space = O(1)
+int getClosest(elem* rt, int target)
+{
+	int closest = INT_MAX;
+	elem* cur = rt;
+	while(cur != NULL){
+		if (abs(cur->data - target) < abs(closest-target)){
+			closest = cur->data;
+		}
+		if (target < cur->data){
+			cur = cur->left;
+		}
+		else if (target > cur->data) {
+			cur = cur->right;
+		}
+		else {
+			break;
+		}
+	}
+	return closest;
+}
+
+#endif
+
+
 int main()
 {
 	string name;
@@ -1026,6 +1132,7 @@ int main()
 		cout<<"max sum "<<maxsumbetweenedges(rt)<<endl;
 	}
 	}
+	break;
 	// roman number to int                            8
 	case proman2int:{
 		int digits;
@@ -1273,6 +1380,88 @@ int main()
 			sinlist->del_elem(sec);
 			sinlist->display();
 		}
+	}
+	break;
+	//add two num without use + operator                          21
+	case psumwithoutoperator:{
+		int a,b;
+		cout<<"input testcase: "<<endl;
+		cin>>testcase;
+		while(testcase --){
+			cout<<"intput int a and int b: "<<endl;
+			cin>>a;
+			cin>>b;
+			cout<<a<<"+"<<b<<"="<<getSum(a,b)<<endl;
+		}
+	}
+	break;
+	//find a unique num in array                                  22
+		case puniquenuminarray:
+		cout<<"num of testcase "<<endl;
+		cin>>testcase;
+		while(testcase --){
+			int arrNum;
+			cout<<"num of array: "<<endl;
+			cin>>arrNum;
+			int arr[arrNum];
+			for(int i=0; i<arrNum; i++){
+				cin>>arr[i];
+			}
+			int result;
+			result = finduniqueNuminArr(arr, arrNum);
+			cout<<result<<endl;
+		}
+	break;
+	//twosum using unorderedset or use left/right pointer in ordered array  23
+	case ptwosum:
+	cout<<"num of testcase "<<endl;
+	cin>>testcase;
+	while(testcase --){
+		int arrNum, target;
+		cout<<"number of array "<<endl;
+		cin>>arrNum;
+		int arr[arrNum];
+		for(int i=0; i<arrNum; i++){
+			cin>>arr[i];
+		}
+		cout<<"target number "<<endl;
+		cin>>target;
+		vector<int> result;
+		result = twosum(arr, arrNum, target);
+		cout<<result[0]<<" , " <<result[1]<<endl;
+	}
+	break;
+	//bst find a node with closest val to target                24
+	//input bst with 2 1 11(11==L) 2 3 17(17==right)
+	case pbsttravers: {
+	int edges, target;
+	int edge[3];
+	elem* rt;
+	cout<<"input testcases "<<endl;
+	cin>>testcase;
+	while(testcase --){
+		cout<<"input number of edges"<<endl;
+		cin>>edges;
+		for(int i =0; i <edges; i++){
+			for (int k =0; k <3; k++){
+				cin>>edge[k];
+			}
+			if (i == 0){
+				rt = new elem();
+				rt->data = edge[0];
+				buildtree(rt, edge);
+			}
+			else {
+				elem* parent = findelem(rt, edge[0]);
+				buildtree(parent, edge);
+			}
+			
+		}
+		outtree(rt, 5);
+		cout<<"input target :"<<endl;
+		cin>>target;
+		cout<<"closest diff = "<<getClosest(rt, target)<<endl;
+	}
 	}
 	break;
 	default:
