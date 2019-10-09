@@ -7,6 +7,7 @@
 #include <math.h>
 #include <climits>
 #include <stack>
+#include <queue>
 using namespace std;
 
 typedef enum {
@@ -34,6 +35,11 @@ typedef enum {
 	puniquenuminarray=22,
 	ptwosum = 23,
 	pbsttravers=24,
+	pgraphdepthfirstsearch=25,
+	pbubblesort = 26,
+	pinsertsort = 27,
+	pselectsort = 28,
+	pquicksort=29,
 }problem;
 
 class single_link{
@@ -989,6 +995,138 @@ int getClosest(elem* rt, int target)
 }
 
 #endif
+//graph consist of virtex with name  and edges vector of children
+struct vertex
+{
+	char name;
+	vector<vertex*> child;
+};
+
+void graphAddNode(vertex* parent, char name)
+{
+	vertex* newvertex = new vertex();
+	newvertex->name = name;
+	parent->child.push_back(newvertex);
+}
+
+vertex* findvertex(vertex* root, char name)
+{
+	vertex* res = NULL;
+	if (name == root->name) {
+		res = root;
+		return res;
+	}
+	for (auto ver:root->child){
+		res = findvertex(ver, name);
+		if (res != NULL) return res;
+	} 
+}
+
+void depthfirstsearch(vertex* cur, vector<char>& array)
+{
+	array.push_back(cur->name);
+	
+	for(auto ver: cur->child){
+		depthfirstsearch(ver, array);
+	}
+	return;
+}
+void breadthfirstsearch(vertex* root, vector<char>& array)
+{
+	queue<vertex*> q;
+	vertex* cur = root;
+	q.push(cur);
+	while(q.empty() == false){
+		cur = q.front();
+		q.pop();
+		array.push_back(cur->name);
+		for (auto ver:cur->child){
+			q.push(ver);
+		}
+	}
+}
+
+//time = O(n^2) | space = O(1)
+void swap(int i, int j, vector<int>& arr)
+{
+	int tmp;
+	tmp = arr[i];
+	arr[i]= arr[j];
+	arr[j]= tmp;
+}
+void bubblesort(vector<int> & input)
+{
+	bool sorted = false;
+	int count =0;
+	int size = input.size();
+	while(!sorted){
+		sorted = true;
+		for(int i = 0; i < size-1-count; i++){
+			if (input[i]>input[i+1]){
+				swap(i, i+1, input);
+				sorted = false;
+			}
+		}
+		count++;
+	}
+}
+// insertsort use left lis as a sorted list, and insert the next right num into that list 
+//time = O(n^2)|space O(1)
+void insertsort(vector<int>& input)
+{
+	int size = input.size();
+	for (int i = 1; i < size; i++){
+		int j =i;
+		while (j >0 && input[j]<input[j-1]){
+			swap(j, j-1, input);
+			j--;
+		}
+	}
+}
+//selectsort
+void selectsort(vector<int>& input)
+{
+	int size = input.size();
+	int j;
+	for (int i=0; i<size-1; i++){
+		int smallest_index = i;
+		for (j=i+1; j<size; j++){
+			if (input[j]<input[smallest_index]){
+				smallest_index = j;
+			}
+		}
+		swap(i,smallest_index,input);
+	}
+}
+
+//quicksort time O(nlogn) space(1)
+
+void quicksorthelp(vector<int>& input, int start, int end)
+{
+	if(start >= end) return;
+	int pivot = start;
+	int left = start+1;
+	int right = end;
+	while(left < right){
+		if (input[left]>input[pivot] && input[right]<input[pivot]){
+			swap(left, right, input);
+		}
+		if (input[left]<=input[pivot]){
+			left ++;
+		}
+		if(input[right]>=input[pivot]){
+			right--;
+		}
+	}
+	swap(pivot, right, input);
+	quicksorthelp(input, start, right-1);
+	quicksorthelp(input, right+1, end);
+}
+
+void quicksort(vector<int>& input)
+{
+	return quicksorthelp(input, 0, input.size()-1);
+}
 
 
 int main()
@@ -1462,6 +1600,83 @@ int main()
 		cin>>target;
 		cout<<"closest diff = "<<getClosest(rt, target)<<endl;
 	}
+	}
+	break;
+	case pgraphdepthfirstsearch: {
+	int edges, target;
+	elem* rt;
+	cout<<"input graph depth "<<endl;
+	cin>>testcase;
+	vertex* root;
+	root = new vertex();
+	root->name = 'a';
+	root->child = {};
+	while(testcase --){
+		cout<<"input number of edges"<<endl;
+		cin>>edges;
+		char edge[edges];
+		for(int i =0; i <edges; i++){
+			cin>>edge[i];
+		}
+		vertex* nod= findvertex(root, edge[0]);
+		for(int j=1;j<edges;j++)
+			graphAddNode(nod, edge[j]);
+	}
+	vector<char> res; 
+	depthfirstsearch(root, res);
+	cout<<"depthfirst\n"<<"[";
+	for (auto c: res){
+		cout<<c<<",";
+	}
+	cout<<"]"<<endl;
+	
+	res = {};
+	breadthfirstsearch(root, res);
+	cout<<"breadthfirst\n"<<"[";
+	for (auto c: res){
+		cout<<c<<",";
+	}
+	cout<<"]"<<endl;
+	}
+	break;
+	case pbubblesort: {
+		vector<int> input = {8,5,2,9,5,6,3};
+		bubblesort(input);
+		cout<<"[";
+		for (auto a:input){
+			cout<<a<<",";
+		}
+		cout<<"]";
+	}
+	break;
+	case pinsertsort: {
+		vector<int> input1 = {8,5,2,9,5,6,3};
+		insertsort(input1);
+		cout<<"[";
+		for (auto a:input1){
+			cout<<a<<",";
+		}
+		cout<<"]";
+	}
+	break;
+	case pselectsort: {
+		vector<int> input2 = {8,5,2,9,5,6,3};
+		selectsort(input2);
+		cout<<"[";
+		for (auto a:input2){
+			cout<<a<<",";
+		}
+		cout<<"]";
+	}
+	break;
+	case pquicksort: {
+		vector<int> input2 = {8,5,2,9,5,6,3};
+		quicksort(input2);
+		cout<<"[";
+		for (auto a:input2){
+			cout<<a<<",";
+		}
+		cout<<"]";
 	}
 	break;
 	default:
