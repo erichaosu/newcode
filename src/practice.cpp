@@ -40,6 +40,7 @@ typedef enum {
 	pinsertsort = 27,
 	pselectsort = 28,
 	pquicksort=29,
+	pshortestpath=30,
 }problem;
 
 class single_link{
@@ -544,6 +545,7 @@ int fib(int n)
 	int result;
 	m[0] = 1;
 	m[1] =1;
+	if(n==0) return 0;
 	if (n<=2) return 1;
 	for (int i =3 ; i<=n; i++){
 		result = m[0] + m[1];
@@ -656,18 +658,18 @@ int minsubset(int arr[], int size, int num)
 	int start = 0;
 	int end = 0;
 	while(end < size){
-	while (cur_sum <=num && end < size){
-		cur_sum +=arr[end];
-		end++;
-	}
-	while (cur_sum >num && start <size){
-		cur_sum -=arr[start];
-		start ++;
-		//update min_len
-		if (min_len > (end-start)){
-			min_len = end-start;
+		while (cur_sum <=num && end < size){
+			cur_sum +=arr[end];
+			end++;
 		}
-	}
+		while (cur_sum >num && start <size){
+			cur_sum -=arr[start];
+			start ++;
+			//update min_len
+			if (min_len > (end-start)){
+				min_len = end-start;
+			}
+		}
 	}
 	if (min_len > size) return -1;
 	return min_len;
@@ -694,7 +696,7 @@ bool ispalindro(string str)
 }
 int numofdel(string str, int m, string rstr, int n)
 {
-	//if pne str le = 0, all char of other str should be deleted
+	//if pne str length = 0, all char of other str should be deleted
 	if (m == 0) return n;
 	if (n == 0) return m;
 
@@ -1021,6 +1023,34 @@ vertex* findvertex(vertex* root, char name)
 		if (res != NULL) return res;
 	} 
 }
+void printvertex(vertex* root)
+{
+	if (root == NULL) {
+		cout<<"NULL"<<endl;
+		return;
+	}
+	//remember the node, so a node only print once
+	// the graph could be circular
+	unordered_set<char> graph = {};
+	queue<vertex*> visited;
+	visited.push(root);
+	while(visited.empty()==false){
+		//pop a node
+		vertex* anode = visited.front();
+		visited.pop();
+		cout<<anode->name<<"\t";
+		if (graph.find(anode->name)== graph.end()){
+			graph.insert(anode->name);
+			for(vertex* v:anode->child){
+				if(graph.find(v->name)== graph.end()){
+					visited.push(v);
+				}
+			}
+		}
+	}
+	cout<<endl;
+}
+
 
 void depthfirstsearch(vertex* cur, vector<char>& array)
 {
@@ -1128,7 +1158,35 @@ void quicksort(vector<int>& input)
 	return quicksorthelp(input, 0, input.size()-1);
 }
 
+void shorestpathhelp(vertex* node1, vertex* node2, unordered_map<char, char>& parent, vector<char>& path)
+{
+	if (!node1||!node2) return;
+	path.push_back(node1->name);
+	for (vertex* v:node1->child)
+	{
+		//add parent
+		parent.insert({node1->name, v->name});
+		if (v->name == node2->name) {
+			path.push_back(v->name);
+			break;
+		}
+		if (parent.find(v->name)==parent.end()){
+			shorestpathhelp(v, node2, parent, path);
+		}
+	}
+}
 
+vector<char> shortestpath(vertex* node1, vertex* node2)
+{
+	unordered_map<char, char> parent; //key = node->name, val = parent->name
+	vector<char> path;
+
+	shorestpathhelp(node1, node2, parent, path);
+	for (char c:path){
+		cout<<c<<"->";
+	}
+	return path;
+}
 int main()
 {
 	string name;
@@ -1145,9 +1203,15 @@ int main()
 	
 	// fib(8)  get fibnacci number using O(n) time O(1) space two number array        1
 	case pfib:
-	cout<<fib(8)<<endl;
+	cout<<"enter testcases:"<<endl;
+	cin>>testcase;
+	while(testcase--){
+		cout<<"enter a number:"<<endl;
+		int input;
+		cin >>input;
+		cout<<"fibnacci of "<<input<<"="<<fib(input)<<endl;
+	}
 	break;
-	
 	// strstr   if str1 contain str2, return position of str1               2
 	case pstrstr: {
 	string s1, s2;
@@ -1679,6 +1743,37 @@ int main()
 		cout<<"]";
 	}
 	break;
+	//twosum using unorderedset or use left/right pointer in ordered array  23
+	case pshortestpath:{
+	int depth, nodes, target;
+	elem* rt;
+	cout<<"input graph depth "<<endl;
+	cin>>depth;
+	vertex* root;
+	root = new vertex();
+	root->name = '1';
+	root->child = {};
+	while(depth --){
+		cout<<"input number of edges"<<endl;
+		cin>>nodes;
+		char node[nodes];
+		for(int i =0; i <nodes; i++){
+			cin>>node[i];
+		}
+		vertex* nod= findvertex(root, node[0]);
+		for(int j=1;j<nodes;j++)
+			graphAddNode(nod, node[j]);
+	}
+	printvertex(root);
+	//find shortest path of two nodes
+	cout<<"input two nodes to get shorest path"<<endl;
+	char s,t;
+	cin>>s;
+	cin>>t;
+	vertex* nod1 = findvertex(root, s);
+	vertex* nod2 = findvertex(root, t);
+	shortestpath(nod1, nod2);
+	}
 	default:
 		break;
 	}
