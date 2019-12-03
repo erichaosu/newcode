@@ -70,14 +70,15 @@ class single_link{
 void single_link::add_front(int val)
 {
 	element* new_elem = new element(val);
-	if (this == NULL) {
+	if (this->head == NULL) {
 		this->head = new_elem;
 		this->tail = new_elem;
+		return;
 	}
 	new_elem->next = this->head;
 	this->head = new_elem;
 }
-
+#if 0
 void single_link::del_elem(int val)
 {
 	if (this == NULL) return;
@@ -96,7 +97,39 @@ void single_link::del_elem(int val)
 		cur = cur->next;
 	}
 }
+#else
+void single_link::del_elem(int val)
+{
+	element* prev = NULL;
+	element* cur = this->head;
+	if(cur->data == val){
+		this->head = this->head->next;
+		delete cur;
+		return;
+	}
+	while (cur->data != val){
+		prev = cur;
+		cur = cur->next;
+		if (cur == NULL){
+			//reached end of list not find equal val
+			cout<<"end of list!"<<endl;
+			return;
+		}
+	}
+	if (cur->next == NULL){
+		//last elem delete
+		this->tail = prev;
+		this->tail->next = NULL;
+		delete cur;
+		return;
+	}
+	//delete middle element
+	prev->next = cur->next;
+	delete cur;
+	return;
+}
 
+#endif
 void single_link::display()
 {
 	element* cur = this->head;
@@ -106,6 +139,7 @@ void single_link::display()
 	}
 	cout<<"NULL"<<endl;
 }
+#if 0
 void single_link::revers_singlelink(element* list)
 {
 	if (list == NULL) return;
@@ -121,7 +155,23 @@ void single_link::revers_singlelink(element* list)
 	}
 	this->head = t1;
 }
-
+#else
+void single_link::revers_singlelink(element* list)
+{
+	if (list == NULL) return;
+	if(list->next == NULL) return;
+	element* p3;
+	element* p1 = NULL;
+	element* p2 = list;
+	while(p2 != NULL){
+		p3 = p2->next;
+		p2->next = p1;
+		p1 = p2;
+		p2 = p3;
+	}
+	this->head = p1;
+}
+#endif
 //double linklist
 class Node {
   public:
@@ -392,6 +442,7 @@ void insertnode(node* parent, char t[])
 		parent->right = cur;
 	}
 }
+#if 0
 node* findnode(node* root, char t[])
 {
 	char val = t[0];
@@ -404,6 +455,26 @@ node* findnode(node* root, char t[])
 		findnode(cur->right, t);
 	}
 }
+#else
+//time O(n) space O(n)
+node* findnode(node* root, char t[])
+{
+	queue<node*> q;
+	q.push(root);
+	while(q.empty()!=true){
+		node* cur = q.front();
+		q.pop();
+		if (cur->data == t[0]){
+			return cur;
+		}
+		else {
+			if (cur->left) q.push(cur->left);
+			if (cur->right) q.push(cur->right);
+		}
+	}
+}
+#endif
+
 //recursive get min depth of tree
 int mindepth(node* t)
 {
@@ -1030,7 +1101,8 @@ void printvertex(vertex* root)
 		return;
 	}
 	//remember the node, so a node only print once
-	// the graph could be circular
+	// the graph could be circular, use the unordered_set to make sure those name only seen once
+	//would be pushed into queue.
 	unordered_set<char> graph = {};
 	queue<vertex*> visited;
 	visited.push(root);
@@ -1051,7 +1123,7 @@ void printvertex(vertex* root)
 	cout<<endl;
 }
 
-
+#if 1
 void depthfirstsearch(vertex* cur, vector<char>& array)
 {
 	array.push_back(cur->name);
@@ -1061,6 +1133,22 @@ void depthfirstsearch(vertex* cur, vector<char>& array)
 	}
 	return;
 }
+#else
+void depthfirstsearch(vertex* root, vector<char>& array)
+{
+	stack<vertex*> stk;
+	vertex* cur = root;
+	stk.push(cur);
+	while(stk.empty() != true){
+		cur = stk.top();
+		stk.pop();
+		array.push_back(cur->name);
+		for (auto v:cur->child){
+			stk.push(v);
+		}
+	}
+}
+#endif
 void breadthfirstsearch(vertex* root, vector<char>& array)
 {
 	queue<vertex*> q;
@@ -1076,7 +1164,6 @@ void breadthfirstsearch(vertex* root, vector<char>& array)
 	}
 }
 
-//time = O(n^2) | space = O(1)
 void swap(int i, int j, vector<int>& arr)
 {
 	int tmp;
@@ -1084,6 +1171,7 @@ void swap(int i, int j, vector<int>& arr)
 	arr[i]= arr[j];
 	arr[j]= tmp;
 }
+//time = O(n^2) | space = O(1)
 void bubblesort(vector<int> & input)
 {
 	bool sorted = false;
@@ -1194,6 +1282,10 @@ int main()
 	int pr;
     DoublyLinkedList* linkedList = new DoublyLinkedList();
     Node listnode(1);
+	//check little endian
+	uint32_t b =12345678;
+    uint8_t *c = (uint8_t*) &b;
+	cout<<"little endian "<<((uint8_t)*c == 78? "true":"false")<<endl;
 
     linkedList->setHead(&listnode);
     linkedList->remove(&listnode);
@@ -1666,6 +1758,7 @@ int main()
 	}
 	}
 	break;
+	// input: number of depth 3, number of edges 3 abc, 2 bd, 2 de
 	case pgraphdepthfirstsearch: {
 	int edges, target;
 	elem* rt;
@@ -1686,6 +1779,7 @@ int main()
 		for(int j=1;j<edges;j++)
 			graphAddNode(nod, edge[j]);
 	}
+	printvertex(root);
 	vector<char> res; 
 	depthfirstsearch(root, res);
 	cout<<"depthfirst\n"<<"[";
