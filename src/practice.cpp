@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstring>
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
@@ -160,11 +161,10 @@ void single_link::revers_singlelink(element* list)
 {
 	if (list == NULL) return;
 	if(list->next == NULL) return;
-	element* p3;
 	element* p1 = NULL;
 	element* p2 = list;
 	while(p2 != NULL){
-		p3 = p2->next;
+		element* p3 = p2->next;
 		p2->next = p1;
 		p1 = p2;
 		p2 = p3;
@@ -326,6 +326,7 @@ vector<int> findsubset(int arr[], int size)
 {
 	vector<int> result ={};
 	vector<int> fibNum={};
+	// get array's max element
 	int maxEle = *max_element(arr, arr+size);
 	int n = 2;
 	unordered_map<int,int> cache = {{0,0},{1,1},{2,1}};
@@ -402,7 +403,12 @@ void outtree(T* t, int space)
 		outtree(t->left, space);
 	}
 }
-
+//convert str2tree                                 6
+//tenary expression to build tree
+// a?b?c:d:e build tree 
+//        a
+//      b   e
+//    c   d
 node* convertExpressionHelp(string str, int& idx)
 {
 	node* cur = new node();
@@ -456,7 +462,7 @@ node* findnode(node* root, char t[])
 	}
 }
 #else
-//time O(n) space O(n)
+//breadth first search time O(n) space O(n)
 node* findnode(node* root, char t[])
 {
 	queue<node*> q;
@@ -473,6 +479,7 @@ node* findnode(node* root, char t[])
 		}
 	}
 }
+
 #endif
 
 //recursive get min depth of tree
@@ -511,7 +518,7 @@ string sortstr(string &s)
 	return res;
 
 }
-string reverse(string s)
+/*  string reverse(string s)
 {
 	int len = s.length();
 	char tmp;
@@ -525,8 +532,21 @@ string reverse(string s)
 		j--;
 	}
 	return s;
+} */
+string reverse(string s)
+{
+	int len = s.length();
+	int left = 0;
+	int right = len -1;
+	while (left < right){
+		char tmp = s[right];
+		s[right] = s[left];
+		s[left] = tmp;
+		left ++;
+		right --;
+	}
+	return s;
 }
-
 string int2str(int t)
 {
 	string s = "";
@@ -609,7 +629,8 @@ int strstr(string s, string x)
 	return pos;
 }
 #endif
-#if 1
+#if 0
+//time = O(n), space = O(1)
 int fib(int n)
 {
 	int m[2];
@@ -626,7 +647,7 @@ int fib(int n)
 	return result;
 }
 #else
-// use array
+// use array time = O(n), space = O(n)
 int fib(int n)
 {
 	int m[n+1];
@@ -643,6 +664,7 @@ int max(int a, int b)
 {
 	return a>=b?a:b;
 }
+// calculate max sum of all node's data, all nodes have to be on the same leg
 int maxsumofedges(elem* root, int & res)
 {	
 	if (!root) return 0;
@@ -818,7 +840,7 @@ void printleaf(BST* bst)
 	if (cur->left) printleaf(cur->left);
 	if (cur->right) printleaf(cur->right);
 }
-
+// max number of nonoverlap array
 int  maxsecwooverlap(vector<int> &start, vector<int> &end, int numofnodes)
 {
 	int maxnoneoverlap = 0;
@@ -836,7 +858,7 @@ int  maxsecwooverlap(vector<int> &start, vector<int> &end, int numofnodes)
 	}
 	return maxnoneoverlap;
 }
-
+// t is the target, triplesum equal to t, get the total number of triplesum
 int triplesumnum(vector<int> arr, int numofnodes, int t)
 {
 	vector<vector<int>> res;
@@ -861,7 +883,7 @@ int triplesumnum(vector<int> arr, int numofnodes, int t)
 	}
 	return res.end() - res.begin();
 }
-
+// two number difference equal to t, return total number of twodiff in the arr
 int twodiff(vector<int> arr, int size, int t)
 {
 	int res =0;
@@ -1046,6 +1068,7 @@ int getClosest(elem* rt, int target)
 }
 #else
 //time O(logn) space = O(1)
+// BST tree find the node which has value cloest to target
 int getClosest(elem* rt, int target)
 {
 	int closest = INT_MAX;
@@ -1134,20 +1157,7 @@ void depthfirstsearch(vertex* cur, vector<char>& array)
 	return;
 }
 #else
-void depthfirstsearch(vertex* root, vector<char>& array)
-{
-	stack<vertex*> stk;
-	vertex* cur = root;
-	stk.push(cur);
-	while(stk.empty() != true){
-		cur = stk.top();
-		stk.pop();
-		array.push_back(cur->name);
-		for (auto v:cur->child){
-			stk.push(v);
-		}
-	}
-}
+
 #endif
 void breadthfirstsearch(vertex* root, vector<char>& array)
 {
@@ -1172,6 +1182,7 @@ void swap(int i, int j, vector<int>& arr)
 	arr[j]= tmp;
 }
 //time = O(n^2) | space = O(1)
+//count is how many rounds sort executed
 void bubblesort(vector<int> & input)
 {
 	bool sorted = false;
@@ -1275,18 +1286,104 @@ vector<char> shortestpath(vertex* node1, vertex* node2)
 	}
 	return path;
 }
+#define MAX 128
+// This function returns true if contents of arr1[] and arr2[] 
+// are same, otherwise false. 
+bool compare(char arr1[], char arr2[]) 
+{ 
+    for (int i=0; i<MAX; i++) 
+        if (arr1[i] != arr2[i]) 
+            return false; 
+    return true; 
+} 
+  
+// This function search for all permutations of pat[] in txt[] 
+void search(char *pat, char  *txt) 
+{ 
+    int M = strlen(pat), N = strlen(txt); 
+  
+    // countP[]:  Store count of all characters of pattern 
+    // countTW[]: Store count of current window of text 
+    char countP[MAX] = {0}, countTW[MAX] = {0}; 
+    for (int i = 0; i < M; i++) 
+    { 
+        (countP[pat[i]])++; 
+        (countTW[txt[i]])++; 
+    } 
+  
+    // Traverse through remaining characters of pattern 
+    for (int i = M; i < N; i++) 
+    { 
+        // Compare counts of current window of text with 
+        // counts of pattern[] 
+        if (compare(countP, countTW)) 
+            cout << "Found at Index " << (i - M) << endl; 
+  
+        // Add current character to current window 
+        (countTW[txt[i]])++; 
+  
+        // Remove the first character of previous window 
+        countTW[txt[i-M]]--; 
+    } 
+  
+    // Check for the last window in text 
+    if (compare(countP, countTW)) 
+        cout << "Found at Index " << (N - M) << endl; 
+} 
+
+// Function to print permutations of string  
+// This function takes three parameters:  
+// 1. String  
+// 2. Starting index of the string  
+// 3. Ending index of the string.  
+void permute(string a, int l, int r)  
+{  
+    // Base case  
+    if (l == r)  
+        cout<<a<<endl;  
+    else
+    {  
+        // Permutations made  
+        for (int i = l; i <= r; i++)  
+        {  
+  
+            // Swapping done  
+            swap(a[l], a[i]);  
+  
+            // Recursion called  
+            permute(a, l+1, r);  
+  
+            //backtrack  
+            swap(a[l], a[i]);  
+        }  
+    }  
+}  
+
+
 int main()
 {
 	string name;
 	int testcase;
 	int pr;
+	//print all permutation
+	string a = "ABC";
+	int l = a.length();
+	permute(a, 0, l-1);
+
+
+	//anagram
+
+	char txt[] = "BACDGABCDA"; 
+    char pat[] = "ABCD"; 
+    search(pat, txt); 
+
     DoublyLinkedList* linkedList = new DoublyLinkedList();
     Node listnode(1);
 	//check little endian
 	uint32_t b =12345678;
     uint8_t *c = (uint8_t*) &b;
 	cout<<"little endian "<<((uint8_t)*c == 78? "true":"false")<<endl;
-
+	cout<<"str = "<<int2str(344)<<endl;
     linkedList->setHead(&listnode);
     linkedList->remove(&listnode);
 	cout<<"input problem index "<<endl;
